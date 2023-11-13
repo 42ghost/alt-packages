@@ -1,19 +1,15 @@
 #include "compare.hpp"
 
-Comparator::Comparator(string br1, string br2)
+BranchData::BranchData(string br1)
 {
-    branch1 = br1;
-    branch2 = br2;
-    branch1_packs = {};
-    branch2_packs = {};
+    branch = br1;
+    branch_packs = {};
 }
 
-Comparator::~Comparator()
-{
-}
+BranchData::~BranchData(){}
 
-void Comparator::readJSON(string br, map<pair<string, string>, packege_json> br_packs){
-    std::ifstream ifs(br + ".json");
+void BranchData::readJSON(){
+    std::ifstream ifs(branch + ".json");
     rapidjson::IStreamWrapper isw(ifs);
     
     rapidjson::Document document;
@@ -33,7 +29,7 @@ void Comparator::readJSON(string br, map<pair<string, string>, packege_json> br_
         const string source = pkg["source"].GetString();
         const string version = pkg["version"].GetString();
         
-        br_packs[{arch, name}] = {
+        branch_packs[{arch, name}] = {
             arch,
             buildtime,
             disttag,
@@ -44,15 +40,12 @@ void Comparator::readJSON(string br, map<pair<string, string>, packege_json> br_
             version
         };
     }
-    int j = 0;
-    for (auto& f: br_packs) {     
-        cout << br_packs[f.first].name << endl;
-        if (j == 5){
-            cout << endl;
-            break;
-        }
-        j++;
-    }
+}
 
-    return ;
+Comparator::Comparator(){}
+
+Comparator::~Comparator(){}
+
+void Comparator::search(BranchData b1, BranchData b2){
+    
 }

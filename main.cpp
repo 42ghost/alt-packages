@@ -11,8 +11,9 @@ int main(int argc, char* argv[]) {
         std::cout << "Not enougth params" << std::endl;
     }
 
-    Comparator C(argv[1], argv[2]);
-    C.readJSON(C.branch1, C.branch1_packs);
-    C.readJSON(C.branch2, C.branch2_packs);
+    BranchData Branch1(argv[1]), Branch2(argv[2]);
+    Branch1.readJSON();
+    Branch2.readJSON();
+
     return 0;
 }

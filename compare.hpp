@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <vector>
 #include <utility>
 #include <fstream>
 #include <rapidjson/document.h>
@@ -12,7 +13,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/ostreamwrapper.h>
 
-using std::string, std::map, std::pair;
+using std::string, std::map, std::vector, std::pair;
 using std::cout, std::cin, std::endl;
 
 struct packege_json
@@ -27,21 +28,27 @@ struct packege_json
     string version;
 };
 
+class BranchData
+{
+private:
+    string branch;
+public:
+    map<pair<string, string>, packege_json> branch_packs;
+    BranchData(string);
+    ~BranchData();
+    void readJSON();
+};
+
 class Comparator
 {
 private:
+    vector<packege_json> br1_except_br2;
+    vector<packege_json> br2_except_br1;
 public:
-    string branch1;
-    string branch2;
-    map<pair<string, string>, packege_json> branch1_packs;
-    map<pair<string, string>, packege_json> branch2_packs;
-
-    map<pair<string, string>, packege_json> br1_except_br2;
-    map<pair<string, string>, packege_json> br2_except_br1;
-    Comparator(string, string);
+    Comparator();
     ~Comparator();
-    void readJSON(string, map<pair<string, string>, packege_json>);
-    void search(map<pair<string, string>, packege_json>, map<pair<string, string>, packege_json>);
+    void search(BranchData b1, BranchData b2);
+    void makeJSON(map<pair<string, string>, packege_json>&);
 };
 
 
