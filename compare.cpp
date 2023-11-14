@@ -42,10 +42,97 @@ void BranchData::readJSON(){
     }
 }
 
+string BranchData::get_name(){
+    return branch;
+}
+
 Comparator::Comparator(){}
 
 Comparator::~Comparator(){}
 
-void Comparator::search(BranchData b1, BranchData b2){
-    
+void Comparator::diff(BranchData b1, BranchData b2){
+    for (auto& it: b1.branch_packs){
+        if (b2.branch_packs.find(it.first) == b2.branch_packs.end()){
+            br1_except_br2.push_back(it.second);
+        }
+    }
+
+    for (auto& it: b2.branch_packs){
+        if (b1.branch_packs.find(it.first) == b1.branch_packs.end()){
+            br2_except_br1.push_back(it.second);
+        }
+    }
+}
+
+void Comparator::find_np(BranchData b1, BranchData b2){
+    for (auto& it: b1.branch_packs){
+        if (b2.branch_packs.find(it.first) != b2.branch_packs.end()){
+            if (it.second.buildtime > b2.branch_packs[it.first].buildtime){
+                newer_packs.push_back(it.second);
+            }
+        }
+    }
+}
+
+void Comparator::make_JSON(string b1_name, string b2_name){
+    rapidjson::Document document;
+    rapidjson::Document::AllocatorType& allocator = document.GetAllocator();
+
+    rapidjson::Value br1_ex_br2(rapidjson::kArrayType);
+    for(const auto& data : br1_except_br2) {
+        rapidjson::Value item(rapidjson::kObjectType);
+        item.AddMember("arch", rapidjson::Value(data.arch.c_str(), allocator).Move(), allocator);
+        item.AddMember("buildtime", data.buildtime, allocator);
+        item.AddMember("disttag", rapidjson::Value(data.disttag.c_str(), allocator).Move(), allocator);
+        item.AddMember("epoch", data.epoch, allocator);
+        item.AddMember("name", rapidjson::Value(data.name.c_str(), allocator).Move(), allocator);
+        item.AddMember("release", rapidjson::Value(data.release.c_str(), allocator).Move(), allocator);
+        item.AddMember("source", rapidjson::Value(data.source.c_str(), allocator).Move(), allocator);
+        item.AddMember("version", rapidjson::Value(data.version.c_str(), allocator).Move(), allocator);
+        br1_ex_br2.PushBack(item, allocator);
+        break;
+    }
+
+    rapidjson::Value br2_ex_br1(rapidjson::kArrayType);
+    for(const auto& data : br2_except_br1) {
+        rapidjson::Value item(rapidjson::kObjectType);
+        item.AddMember("arch", rapidjson::Value(data.arch.c_str(), allocator).Move(), allocator);
+        item.AddMember("buildtime", data.buildtime, allocator);
+        item.AddMember("disttag", rapidjson::Value(data.disttag.c_str(), allocator).Move(), allocator);
+        item.AddMember("epoch", data.epoch, allocator);
+        item.AddMember("name", rapidjson::Value(data.name.c_str(), allocator).Move(), allocator);
+        item.AddMember("release", rapidjson::Value(data.release.c_str(), allocator).Move(), allocator);
+        item.AddMember("source", rapidjson::Value(data.source.c_str(), allocator).Move(), allocator);
+        item.AddMember("version", rapidjson::Value(data.version.c_str(), allocator).Move(), allocator);
+        br2_ex_br1.PushBack(item, allocator);
+        break;
+    }
+
+    rapidjson::Value n_packs(rapidjson::kArrayType);
+    for(const auto& data : newer_packs) {
+        rapidjson::Value item(rapidjson::kObjectType);
+        item.AddMember("arch", rapidjson::Value(data.arch.c_str(), allocator).Move(), allocator);
+        item.AddMember("buildtime", data.buildtime, allocator);
+        item.AddMember("disttag", rapidjson::Value(data.disttag.c_str(), allocator).Move(), allocator);
+        item.AddMember("epoch", data.epoch, allocator);
+        item.AddMember("name", rapidjson::Value(data.name.c_str(), allocator).Move(), allocator);
+        item.AddMember("release", rapidjson::Value(data.release.c_str(), allocator).Move(), allocator);
+        item.AddMember("source", rapidjson::Value(data.source.c_str(), allocator).Move(), allocator);
+        item.AddMember("version", rapidjson::Value(data.version.c_str(), allocator).Move(), allocator);
+        n_packs.PushBack(item, allocator);
+        break;
+    }
+
+    document.SetObject();
+    document.AddMember("branch1_except_branch2", br1_ex_br2, allocator);
+    document.AddMember("branch2_except_branch1", br2_ex_br1, allocator);
+    document.AddMember("branch1_newer_branch2", n_packs, allocator);
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+    document.Accept(writer);
+
+    std::ofstream ofs(b1_name + "_" + b2_name + ".json");
+    ofs << buffer.GetString();
+    ofs.close();
 }
