@@ -15,7 +15,7 @@ void BranchData::readJSON(){
     rapidjson::Document document;
     document.ParseStream(isw);
 
-    const int length = document["length"].GetInt();
+    const unsigned int length = document["length"].GetInt();
     const auto& packages = document["packages"];
 
     for (rapidjson::SizeType i = 0; i < length; i++) {
@@ -90,7 +90,6 @@ void Comparator::make_JSON(string b1_name, string b2_name){
         item.AddMember("source", rapidjson::Value(data.source.c_str(), allocator).Move(), allocator);
         item.AddMember("version", rapidjson::Value(data.version.c_str(), allocator).Move(), allocator);
         br1_ex_br2.PushBack(item, allocator);
-        break;
     }
 
     rapidjson::Value br2_ex_br1(rapidjson::kArrayType);
@@ -105,7 +104,6 @@ void Comparator::make_JSON(string b1_name, string b2_name){
         item.AddMember("source", rapidjson::Value(data.source.c_str(), allocator).Move(), allocator);
         item.AddMember("version", rapidjson::Value(data.version.c_str(), allocator).Move(), allocator);
         br2_ex_br1.PushBack(item, allocator);
-        break;
     }
 
     rapidjson::Value n_packs(rapidjson::kArrayType);
@@ -120,7 +118,6 @@ void Comparator::make_JSON(string b1_name, string b2_name){
         item.AddMember("source", rapidjson::Value(data.source.c_str(), allocator).Move(), allocator);
         item.AddMember("version", rapidjson::Value(data.version.c_str(), allocator).Move(), allocator);
         n_packs.PushBack(item, allocator);
-        break;
     }
 
     document.SetObject();
