@@ -20,8 +20,8 @@ The program receives 2 branch names as input, receives a list of their packages 
 #1. library compilation
 g++ -g -c -fPIC -Wall compare.cpp
 g++ -shared -Wall -o libalt.so.1.0.0 compare.o
+
 # 2. Program compilation
-```bash
 g++ -o compare main.o -L. -lalt -Wl,-rpath,.
 ```
 or
