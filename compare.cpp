@@ -67,8 +67,18 @@ void Comparator::diff(BranchData b1, BranchData b2){
 void Comparator::find_np(BranchData b1, BranchData b2){
     for (auto& it: b1.branch_packs){
         if (b2.branch_packs.find(it.first) != b2.branch_packs.end()){
-            if (it.second.buildtime > b2.branch_packs[it.first].buildtime){
+            switch (strcmp((it.second.version).c_str(), (b2.branch_packs[it.first].version).c_str()))
+            {
+            case 1:
                 newer_packs.push_back(it.second);
+                break;
+            case 0:
+                if (strcmp((it.second.release).c_str(), (b2.branch_packs[it.first].release).c_str()) == 1){
+                    newer_packs.push_back(it.second);
+                }
+                break;
+            default:
+                break;
             }
         }
     }

@@ -19,6 +19,6 @@ int main(int argc, char* argv[]) {
     Cmp.diff(Branch1, Branch2);
     Cmp.find_np(Branch1, Branch2);
 
-    Cmp.make_JSON(Branch1.get_name(), Branch2.get_name());
+    Cmp.make_JSON(Branch1.get_name(), Branch2.get_name());  
     return 0;
 }
