@@ -2,7 +2,6 @@
 #define COMPARE_HPP
 
 #include <iostream>
-#include <cstring>
 #include <string>
 #include <map>
 #include <vector>

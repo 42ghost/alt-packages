@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
         system((pyscript + argv[2]).c_str());
     } else {
         std::cout << "Not enougth params" << std::endl;
+        exit(1);
     }
 
     BranchData Branch1(argv[1]), Branch2(argv[2]);
