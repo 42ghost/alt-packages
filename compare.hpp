@@ -48,6 +48,10 @@ private:
     vector<packege_json> br2_except_br1;
 
     vector<packege_json> newer_packs;
+
+    vector<string> split(string, char);
+    int compare_version(string, string);
+    int compare_release(string, string, char);
 public:
     Comparator();
     ~Comparator();

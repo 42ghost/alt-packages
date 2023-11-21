@@ -69,10 +69,15 @@ void Comparator::find_np(BranchData b1, BranchData b2){
         if (b2.branch_packs.find(it.first) != b2.branch_packs.end()){
             string version1 = it.second.version;
             string version2 = b2.branch_packs[it.first].version;
-            if (version1 > version2){
+            int cv = compare_version(version1, version2);
+
+            if (cv == 1){
                 newer_packs.push_back(it.second);
-            } else if (version1 == version2) {
-                if (it.second.release > b2.branch_packs[it.first].release){
+            } else if (cv == 0) {
+                string rel1 = it.second.release;
+                string rel2 = b2.branch_packs[it.first].release;
+                int cr = compare_release(rel1, rel2, '_');
+                if (cr == 1){
                     newer_packs.push_back(it.second);
                 }
             }
@@ -138,4 +143,98 @@ void Comparator::make_JSON(string b1_name, string b2_name){
     std::ofstream ofs(b1_name + "_" + b2_name + ".json");
     ofs << buffer.GetString();
     ofs.close();
+}
+
+vector<string> Comparator::split(string s, char delimiter) {
+    vector<string> tokens;
+    string token;
+    
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != string::npos) {
+        token = s.substr(0, pos);
+        tokens.push_back(token);
+        s.erase(0, pos + 1);
+    }
+    tokens.push_back(s);
+    return tokens;
+}
+
+int Comparator::compare_version(string version1, string version2){
+    vector<string> v1 = split(version1, '.');
+    vector<string> v2 = split(version2, '.');
+
+    for (size_t i = 0; i < std::max(v1.size(), v2.size()); i++) {
+        try
+        {
+            int num1 = (i < v1.size()) ? stoi(v1[i]) : 0;
+            int num2 = (i < v2.size()) ? stoi(v2[i]) : 0;
+            if (num1 > num2) {
+                return 1;
+            } else if (num1 < num2) {
+                return -1;
+            }
+        }
+        catch(const std::exception& e)
+        {
+            if (isdigit(v1[i][0]))
+                return 1;
+            else if (isdigit(v2[i][0]))
+                return -1;
+            else
+                return 0;
+        }
+    }
+
+    if (version1.length() > version2.length()){
+        return 1;
+    } else if (version1.length() < version2.length()){
+        return -1;
+    } else if (version1[version1.length() - 1] > version2[version2.length() - 1]){
+        return 1;
+    } else if (version1[version1.length() - 1] < version2[version2.length() - 1]){
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+int Comparator::compare_release(string s1, string s2, char delimeter){
+    s1.erase(0, 3);
+    s2.erase(0, 3);
+
+    vector<string> r1 = split(split(s1, '.')[0], delimeter);
+    vector<string> r2 = split(split(s2, '.')[0], delimeter);
+    
+
+    if (stoi(r1[0]) > stoi(r2[0])){
+        return 1;
+    } else if (stoi(r1[0]) < stoi(r2[0])) {
+        return -1;
+    }
+
+    if (r1.size() > r2.size()){
+        return 1;
+    } else if (r1.size() < r2.size()) {
+        return -1;
+    }
+
+    for (size_t i = 1; i < r1.size(); i++){
+        try
+        {
+            int num1 = stoi(r1[i]);
+            int num2 = stoi(r2[i]);
+
+            if (num1 > num2) {
+                return 1;
+            } else if (num1 < num2) {
+                return -1;
+            }
+        }
+        catch (const std::exception& e)
+        {
+            return 0;
+        }
+    }
+
+    return 0;
 }
